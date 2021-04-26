@@ -1,0 +1,302 @@
+# Introducción a OpenStack
+
+En primer lugar se ha de acceder a $HOME/scripts.
+
+```bash
+cd ~/scripts
+```
+
+En este directorio se encuentra una serie de ejecutables con diferentes opciones a probar.
+
+# Pasos iniciales
+
+Antes de poder realizar cualquier operación mediante esta herramienta se ha de realizar cierta configuración mínima.
+A fin de poder operar con la herramienta de CLI que ofrece el comando "openstack" se han de configurar las variables de entorno con las credenciales necesarias.
+
+## Preparación del entorno de CLI
+
+Hay dos maneras de obtener las credenciales de OpenStack para un proyecto (tenant) y usuario.
+En ambos casos se trata de un archivo llamado "openrc" que incluye variables de inciialización para usar con un usuario y proyecto específico.
+
+El primer modo es a través de la interfaz gráfica de la instancia OpenStack, en concreto a la sección que aloja el [archivo RC](http://localhost:8081/dashboard/project/api_access/openrc/), que es el que carga dichas variables. Luego se ha de copiar el contenido en un archivo dentro de la VM, por ejemplo bajo ~/openrc.sh.
+
+En el otro modo, en que se dispone de acceso a la instancia de OpenStack, basta con copiar el archivo autogenerado:
+
+```bash
+cp /opt/devstack/openrc ~/openrc.sh
+```
+
+*Nota*: en este caso el usuario y proyecto predeterminado del archivo "openrc" es "demo" y por tanto *no* permite acceso como administrador, por lo que algunas funciones no están operativas.
+
+En ambos casos se carga este archivo y se introduce el password si es necesario.
+
+```bash
+# Opción A: como usuario y proyecto por defecto del archivo
+source ~/openrc.sh
+# Opción B: como usuario y proyecto determinados (pasados por parámetro)
+source /opt/devstack/openrc admin admin
+```
+
+Con esto ya se puede empezar a operar con la CLI.
+
+# Uso
+
+## Registrar imágenes
+
+OpenStack debe tener a su disposición las imágenes de los diferentes sistemas operativos que puede instanciar.
+En primer lugar, se descarga la imagen o imágenes deseadas y luego se registran en la plataforma.
+
+```bash
+./image-create-cirros.sh
+./image-create-ubuntu.sh
+```
+
+Una vez registradas, se puede ver la lista de imágenes disponibles.
+
+```bash
+./images-list.sh
+```
+
+También se puede mirar el detalle de alguna de ellas, pasando por parámetro su nombre o ID.
+
+```bash
+IMG_ID="cirros-0.3.5-x86_64-disk.img"
+./image-show.sh $IMG_ID
+```
+
+## Crear *flavors*
+
+Un *flavor* es una especie de *template* con parámetros rellenados de las máquinas virtuales y que se usa para definir los recurso que ésta consumirá. Por ejemplo, los núcleos, memoria o disco.
+
+En este ejemplo se creará un *flavor* con 1 vCPU, 1GB de RAM y 5 GB de disco.
+
+```bash
+./flavor-create.sh
+```
+
+Una vez creado, se puede mirar éste y otros *flavors* disponibles.
+
+```bash
+./flavors-list.sh
+```
+
+O bien mostrar los detalles de un *flavor*, pasando por parámetro el nombre o ID del mismo.
+
+```bash
+FLAVOR_ID="c1r1Gd5G"
+./flavor-show.sh $FLAVOR_ID
+```
+
+## Crear pares de claves
+
+Para poder acceder mediante SSH a las instancias con mayor capacidad de automatización y seguridad se suele usar un par de claves. Esto es especialmente en algunas imágenes preparadas para *cloud* que no admiten configuración mediante password.
+
+Con este script se generará una clave RSA y se registrará en la plataforma.
+
+```bash
+./keypair-create.sh
+```
+
+## Crear redes
+
+El uso de redes virtualizadas es crucial en OpenStack para conectar las instancias entre sí, o bien aislarlas.
+En este caso se proceden a crear redes y subredes virtuales de forma simple, para que luego las instancias de computación puedan coneconectar sus interfaces a ellas.
+
+```bash
+NET_NAME="mgmtnet"
+SUBNET_CIDR_NM="10.10.20.0"
+SUBNET_MASK="24"
+./network-create.sh $NET_NAME $SUBNET_CIDR_NM $SUBNET_MASK
+
+NET_NAME="privnet1"
+SUBNET_CIDR_NM="10.10.50.0"
+SUBNET_MASK="24"
+./network-create.sh $NET_NAME $SUBNET_CIDR_NM $SUBNET_MASK
+
+NET_NAME="privnet2"
+SUBNET_CIDR_NM="10.10.60.0"
+SUBNET_MASK="24"
+./network-create.sh $NET_NAME $SUBNET_CIDR_NM $SUBNET_MASK
+```
+
+Tras la creación se procede a ver la lista de redes y subredes.
+
+```bash
+./networks-list.sh
+```
+
+## Definir puertos
+
+Una de las abstracciones relacionadas con las redes son los puertos: una suerte de interfaces con ciertos datos preconfigurados, por ejemplo su IP. De este modo es posible conectar una máquina virtual con una IP estática, en lugar de depender de la IP que asigna el DHCP de la red.
+
+```bash
+PORT_NAME="privnet1-port"
+NETWORK_ID="privnet1"
+SUBNETWORK_ID="privnet1-subnet"
+IP_ADDR="10.10.50.3"
+./port-create.sh $PORT_NAME $NETWORK_ID $SUBNETWORK_ID $IP_ADDR
+
+PORT_NAME="privnet2-port"
+NETWORK_ID="privnet2"
+SUBNETWORK_ID="privnet2-subnet"
+IP_ADDR="10.10.60.3"
+./port-create.sh $PORT_NAME $NETWORK_ID $SUBNETWORK_ID $IP_ADDR
+```
+
+Como en los casos anteriores, se puede consultar la lista de los puertos disponibles.
+
+```bash
+./ports-list.sh
+```
+
+O bien mostrar los detalles de un puerto determinado, pasando su nombre ID por parámetro.
+
+```bash
+PORT_ID="privnet2-port"
+./port-show.sh $PORT_ID
+```
+
+## Crear *routers*
+
+Otra de las abstracciones de red son los *routers* virtuales.
+Igual que con uno físico, permiten conectar redes L3 diferentes entre sí, de forma que las instancias de computación que se encuentren inicialmente en redes diferentes también puedan conectarse entre sí.
+
+Primero se crea el *router* en sí.
+
+```bash
+ROUTER_NAME="router-priv1topriv2"
+./router-create.sh $ROUTER_NAME
+```
+
+Luego se conectan las diferentes subredes que se quiere hacer visibles entre sí.
+
+```bash
+ROUTER_NAME="router-priv1topriv2"
+SUBNET_NAME="privnet1-subnet"
+./router-subnet-connect.sh $ROUTER_NAME $SUBNET_NAME
+
+SUBNET_NAME="privnet2-subnet"
+./router-subnet-connect.sh $ROUTER_NAME $SUBNET_NAME
+```
+
+Tras esto, se puede mirar la lista de *routers*.
+
+```bash
+./routers-list.sh
+```
+
+Y luego obtener detalles de un *router* concreto.
+
+```bash
+ROUTER_ID="router-priv1topriv2"
+./router-show.sh $ROUTER_ID
+```
+
+## Definir *security groups*
+
+De cara a configurar el acceso a las redes se definen las reglas de acceso del tráfico entrante y saliente de cada instancia de computación o VM. Esta agrupación de reglas se conoce como *security group*.
+
+Para ello, primero se crea un grupo con unas reglas iniciales, imitando las del grupo de seguridad por defecto e incorporando algunas para permitir el acceso mediante SSH.
+
+```bash
+./securitygroup-create.sh
+```
+
+Luego se pueden observar los diferentes *security groups* disponibles.
+
+```bash
+./securitygroups-list.sh
+```
+
+O bien consultar los detalles de un *security group* concreto, pasando su ID o nombre, así como de las reglas contenidas.
+
+
+```bash
+SECGROUP_ID="cloudinfra-sec"
+./securitygroup-show.sh $SECGROUP_ID
+```
+
+## Instanciar máquinas virtuales
+
+Cuando ya se dispone de todo lo anterior, se procede a la creación de una VM que utilice una imagen, *flavor* y rede determinado. Éste es el recurso llamado *server* en OpenStack.
+
+```bash
+IMG_NAME="cirros-0.3.5-x86_64-disk.img"
+FLV_NAME="c1r1Gd5G"
+SECGROUP_NAME="cloudinfra-sec"
+KEY_NAME="cloudinfra-keypair"
+
+SRV_NAME="cirros-test0"
+NETWORK_NAME="mgmtnet"
+./server-create.sh $SRV_NAME $IMG_NAME $FLV_NAME $SECGROUP_NAME $KEY_NAME $NETWORK_NAME
+
+SRV_NAME="cirros-test1"
+PORT_NAME="privnet1-port"
+./server-create-port.sh $SRV_NAME $IMG_NAME $FLV_NAME $SECGROUP_NAME $KEY_NAME $PORT_NAME
+
+SRV_NAME="cirros-test2"
+PORT_NAME="privnet2-port"
+./server-create-port.sh $SRV_NAME $IMG_NAME $FLV_NAME $SECGROUP_NAME $KEY_NAME $PORT_NAME
+```
+
+Una vez creadas, se puede consultar la lista de instancias de máquinas virtuales disponibles.
+
+```bash
+./servers-list.sh
+```
+
+Así como los detalles de una instancia disponible, pasando su nombre o ID.
+
+```bash
+SRV_NAME="cirros-test1"
+./server-show.sh $SRV_NAME
+```
+
+También se pueden eliminar fácilmente. En este caso se borra la instancia que no se va a usar en la prueba de conectividad.
+
+```bash
+SRV_NAME="cirros-test0"
+./server-delete.sh $SRV_NAME
+```
+
+Hecho esto, se puede acceder a Horizon, acceder a cada una de las dos VMs por VNC (integrado en la interfaz bajo el nombre "Console") y hacer un ping desde una a la otra, cada una en una red diferente y conectadas por el router virtual creado previamente.
+
+Tras la prueba, se borran dichas instancias.
+
+```bash
+SRV_NAME="cirros-test1"
+./server-remove.sh $SRV_NAME
+SRV_NAME="cirros-test2"
+./server-remove.sh $SRV_NAME
+```
+
+## Orquestación de recursos 
+
+Aparte de crear los recursos manualmente, también es posible utilizar unos *templates* que indican todos los recursos a utilizar en un despliegue determinado. De este modo se crean *stacks* que agrupan los recursos relacionados y permiten tratarlos como una unidad, tanto a la hora de crear como a la hora de limpiar el entorno.
+
+Primero se borran las instancias creadas previamente (usando el comando "openstack server"). Luego se crea el *stack*, lo cual dará un informe de estado preliminar y procederá a la instanciación de cada recurso.
+
+```bash
+./stack-create.sh
+```
+
+Una vez se ha desplegado, se puede comprobar el estado de cada *stack* que haya en la plataforma.
+
+```bash
+./stacks-list.sh
+```
+
+Así como consultar sus detalles concretos.
+
+```bash
+STACK_NAME="cirros-stack"
+./stack-show.sh ${STACK_NAME}
+```
+
+Finalmente se procede al borrado del *stack*, que eliminará todos los recursos relacionados.
+
+```bash
+STACK_NAME="cirros-stack"
+./stack-delete.sh ${STACK_NAME}
+```
+

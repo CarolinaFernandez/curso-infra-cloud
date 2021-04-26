@@ -1,0 +1,166 @@
+#
+# Adapted from https://github.com/kodekloudhub/certified-kubernetes-administrator-course
+# File: https://github.com/kodekloudhub/certified-kubernetes-administrator-course/blob/master/Vagrantfile
+#
+
+# -*- mode: ruby -*-
+# vi:set ft=ruby sw=2 ts=2 sts=2:
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  # config.vm.box = "base"
+  config.vm.box = "ubuntu/focal64"
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  config.vm.box_check_update = false
+
+  # Create a public network, which generally matched to bridged network.
+  # Bridged networks make the machine appear as another physical device on
+  # your network.
+  # config.vm.network "public_network"
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  #
+  # config.vm.provider "virtualbox" do |vb|
+  #   # Customize the amount of memory on the VM:
+  #   vb.memory = "1024"
+  # end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
+
+  #post_up_message = ""
+
+  # Provision 1 master node
+  master_ip = "192.168.33.110"
+  ## Primary: default VM used in the multi-VM environment
+  config.vm.define "kubemaster", primary: true do |node|
+    # Name shown in the GUI
+    node.vm.provider "virtualbox" do |vb|
+        vb.name = "cloudinfra-k8s-master"
+        vb.memory = 2048
+        vb.cpus = 2
+    end
+    node.vm.hostname = "cloudinfra-k8s-master"
+
+    # Create a private network, which allows host-only access to the machine
+    # using a specific IP.
+    node.vm.network "private_network", ip: "#{master_ip}", netmask: "255.255.0.0"
+    (0..1).each do |n|
+        node.vm.network "forwarded_port", guest: "23#{79+n}", host: "23#{79+n}"
+    end
+    node.vm.network "forwarded_port", guest: "6443", host: "6443"
+    node.vm.network "forwarded_port", guest: "8001", host: "8001"
+    (0..2).each do |n|
+        node.vm.network "forwarded_port", guest: "1025#{n}", host: "1025#{n}"
+    end
+
+    # Enable provisioning with a shell script. Additional provisioners such as
+    # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
+    # documentation for more information about their specific syntax and use.
+
+    # Copy files for the course at user's home
+    node.vm.provision "file-doc", type: "file", source: "resources/README.md", destination: "~/"
+    node.vm.provision "file-scripts", type: "file", source: "resources/script/operation", destination: "~/scripts"
+    node.vm.provision "file-keys", type: "file", source: "resources/key", destination: "~/.ssh"
+
+    node.vm.provision "setup-hosts", type: "shell", path: "resources/script/setup/setup_k8s_hosts.sh" do |s|
+      s.args = ["enp0s8"]
+    end
+    node.vm.provision "setup-dns", type: "shell", path: "resources/script/setup/update_dns.sh"
+    node.vm.provision "install-docker", type: "shell", path: "resources/script/setup/install_docker.sh"
+    node.vm.provision "install-kube-bins", type: "shell", path: "resources/script/setup/install_kube_tools.sh"
+    node.vm.provision "setup-kube-master", type: "shell", path: "resources/script/setup/setup_kube_master.sh" do |s|
+      s.args = ["#{master_ip}"]
+    end
+    node.vm.provision "place-ssh-keys", type: "shell", after: "file-keys", path: "resources/script/setup/copy_keys.sh"
+    node.vm.provision "setup-kube-node", type: "shell", after: :all, path: "resources/script/setup/setup_kube_node.sh"
+
+    # Post-up message
+    $post_up_msg = <<MSG
+--------------------------------------------------------
+Kubernetes 1.21 (master node)
+
+etcd server client API:		127.0.0.1:2379, 127.0.0.1:2380
+Kubernetes API server: 		https://127.0.0.1:6443
+Kubelet API:			https://127.0.0.1:10250
+Kube Scheduler:			127.0.0.1:10251
+Kube Controller Manager:	127.0.0.1:10252
+--------------------------------------------------------
+MSG
+    node.vm.post_up_message = $post_up_msg
+  end
+
+  # Provision 2 worker nodes
+  worker_ip_base = "192.168.33.1"
+  (1..2).each do |i|
+    config.vm.define "kubenode0#{i}" do |node|
+        node.vm.provider "virtualbox" do |vb|
+            vb.name = "cloudinfra-k8s-node0#{i}"
+            vb.memory = 2048
+            vb.cpus = 2
+        end
+        node.vm.hostname = "cloudinfra-k8s-node0#{i}"
+        # Create a private network, which allows host-only access to the machine
+        # using a specific IP.
+        # 192.168.33.120, 192.168.33.130
+        node.vm.network "private_network", ip: "#{worker_ip_base}#{i+1}0", netmask: "255.255.0.0"
+        # 8011, 8021
+        node.vm.network "forwarded_port", guest: "8001", host: "80#{i}1"
+        # 10350, 10450
+        node.vm.network "forwarded_port", guest: "10250", host: "10#{2+i}50"
+        # (30010..30014), (30020..30024)
+        (0..4).each do |n|
+            node.vm.network "forwarded_port", guest: "3000#{n}", host: "300#{i}#{n}"
+        end
+
+        # Copy files for the course at user's home
+        node.vm.provision "file-doc", type: "file", source: "resources/doc/README.md", destination: "~/"
+        node.vm.provision "file-scripts", type: "file", source: "resources/script/operation", destination: "~/scripts"
+        node.vm.provision "file-keys", type: "file", source: "resources/key", destination: "~/.ssh"
+
+        node.vm.provision "setup-hosts", :type => "shell", path: "resources/script/setup/setup_k8s_hosts.sh" do |s|
+          s.args = ["enp0s8"]
+        end
+        node.vm.provision "setup-dns", type: "shell", path: "resources/script/setup/update_dns.sh"
+        node.vm.provision "install-docker", type: "shell", path: "resources/script/setup/install_docker.sh"
+        node.vm.provision "install-kube-bins", type: "shell", path: "resources/script/setup/install_kube_tools.sh"
+        node.vm.provision "setup-kube-worker", type: "shell", path: "resources/script/setup/setup_kube_worker.sh" do |s|
+          s.args = ["#{master_ip}"]
+        end
+        node.vm.provision "place-ssh-keys", type: "shell", after: "file-keys", path: "resources/script/setup/copy_keys.sh"
+        node.vm.provision "setup-kube-node", type: "shell", after: :all, path: "resources/script/setup/setup_kube_node.sh"
+
+        # Post-up message
+        $post_up_msg = <<MSG
+--------------------------------------------------------
+Kubernetes 1.21 (worker node #{i})
+
+Kubelet API:                    https://127.0.0.1:10#{2+i}50
+NodePort Services:              127.0.0.1:3000#{i}0, 127.0.0.1:3000#{i}1, 127.0.0.1:3000#{i}2,
+				127.0.0.1:3000#{i}3, 127.0.0.1:3000#{i}4
+--------------------------------------------------------
+MSG
+        node.vm.post_up_message = $post_up_msg
+    end
+  end
+end

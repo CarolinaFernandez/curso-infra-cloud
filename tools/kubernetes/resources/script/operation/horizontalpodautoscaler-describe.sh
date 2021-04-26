@@ -1,0 +1,7 @@
+#!/bin/bash
+
+HPA_NAME=$1
+
+[[ -z $HPA_NAME ]] && echo "Error: falta informacion: nombre o ID del horizontalpodautoscaler" && exit 1
+
+kubectl describe hpa ${HPA_NAME}

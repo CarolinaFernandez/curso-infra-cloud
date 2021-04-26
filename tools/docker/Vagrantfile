@@ -1,0 +1,110 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Name
+  config.vm.hostname = "cloudinfra-docker"
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "ubuntu/focal64"
+
+  # Determine disk size (GB):
+  # DevStack: 10
+  config.disksize.size = "10GB"
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # NOTE: This will enable public access to the opened port
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+#  # GUI
+#  config.vm.network "forwarded_port", guest: 80, host: 8081
+#  # Keystone
+#  config.vm.network "forwarded_port", guest: 5000, host: 5000
+#  # VNC
+#  config.vm.network "forwarded_port", guest: 6080, host: 6080
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine and only allow access
+  # via 127.0.0.1 to disable public access
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  # Vagrant access network
+  host_ip = "192.168.33.113"
+  config.vm.network "private_network", ip: "#{host_ip}", netmask: "255.255.0.0"
+
+  # Create a public network, which generally matched to bridged network.
+  # Bridged networks make the machine appear as another physical device on
+  # your network.
+  # config.vm.network "public_network"
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  #
+  config.vm.provider "virtualbox" do |vb|
+  #   # Name shown in the GUI
+      vb.name = "cloudinfra-docker"
+  #   # Display the VirtualBox GUI when booting the machine
+  #   vb.gui = true
+      vb.gui = false
+  #
+  #   # Customize the amount of memory on the VM (MB):
+  #   # Docker: 2048
+    #vb.memory = "2048"
+    vb.memory = "4192"
+  #   # Customize the number of CPUs:
+  #   # Docker: 2
+    vb.cpus = 2
+  #
+  #   # This is commented out until resolution has been found for proper
+  #   # usage. For now it will use the default graphics controller.
+    vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+    # vb.customize ["modifyvm", :id, "--graphicscontroller", "vboxvga"]
+  end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
+  # Note: https://www.vagrantup.com/docs/provisioning/basic_usage
+
+  # Copy files for the course at user's home
+  config.vm.provision "file-doc", type: "file", source: "resources/doc/README.md", destination: "~/"
+  config.vm.provision "file-scripts", type: "file", source: "resources/script/operation", destination: "~/scripts"
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  config.vm.provision "install-docker", type: "shell", privileged: false, path: "resources/script/setup/install_docker.sh"
+  config.vm.provision "install-docker-compose", type: "shell", privileged: false, path: "resources/script/setup/install_docker_compose.sh"
+  config.vm.provision "set-permissions", type: "shell", after: :all, privileged: false, path: "resources/script/setup/set_permissions.sh"
+
+  # Post-up message
+  $post_up_msg = <<MSG
+--------------------------------------------------------
+Docker 20.10.16
+--------------------------------------------------------
+MSG
+  config.vm.post_up_message = $post_up_msg
+end
