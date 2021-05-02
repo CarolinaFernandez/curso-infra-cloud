@@ -64,7 +64,7 @@ Vagrant.configure("2") do |config|
 
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
-    node.vm.network "private_network", ip: "#{master_ip}", netmask: "255.255.0.0"
+    node.vm.network "private_network", ip: "#{master_ip}", netmask: "255.255.255.0"
     (0..1).each do |n|
         node.vm.network "forwarded_port", guest: "23#{79+n}", host: "23#{79+n}"
     end
@@ -79,7 +79,7 @@ Vagrant.configure("2") do |config|
     # documentation for more information about their specific syntax and use.
 
     # Copy files for the course at user's home
-    node.vm.provision "file-doc", type: "file", source: "resources/README.md", destination: "~/"
+    node.vm.provision "file-doc", type: "file", source: "resources/doc/README.md", destination: "~/"
     node.vm.provision "file-scripts", type: "file", source: "resources/script/operation", destination: "~/scripts"
     node.vm.provision "file-keys", type: "file", source: "resources/key", destination: "~/.ssh"
 
@@ -123,7 +123,7 @@ MSG
         # Create a private network, which allows host-only access to the machine
         # using a specific IP.
         # 192.168.33.120, 192.168.33.130
-        node.vm.network "private_network", ip: "#{worker_ip_base}#{i+1}0", netmask: "255.255.0.0"
+        node.vm.network "private_network", ip: "#{worker_ip_base}#{i+1}0", netmask: "255.255.255.0"
         # 8011, 8021
         node.vm.network "forwarded_port", guest: "8001", host: "80#{i}1"
         # 10350, 10450

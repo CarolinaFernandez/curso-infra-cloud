@@ -23,6 +23,6 @@ sudo apt-get install -y bash-completion
 # Setup autocomplete in bash into the current shell, bash-completion package should be installed first
 #sudo -u ${USER} source <(kubectl completion bash)
 # Add autocomplete permanently to your bash shell
-sudo -u ${USER} echo "source <(kubectl completion bash)" >> ~/.bashrc
+sudo -u ${USER} echo "source <(kubectl completion bash)" >> /home/${USER}/.bashrc
 
 sudo apt-mark hold kubelet kubeadm kubectl
