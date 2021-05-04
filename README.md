@@ -44,15 +44,32 @@ Este repositorio provee de documentación y ejecutables para probar herramientas
 
 ```bash
 # Iniciar VM
-%cd%/env/unix/start.bat (devstack|docker|kubernetes|osm)
+%cd%/env/windows/start.bat (devstack|docker|kubernetes|osm)
 # Conectar a VM
-%cd%/env/unix/connect.bat (devstack|docker|osm)
-%cd%/env/unix/connect.bat kubernetes [kubeadmin|kubenode01|kubenode02]
+%cd%/env/windows/connect.bat (devstack|docker|osm)
+%cd%/env/windows/connect.bat kubernetes [kubeadmin|kubenode01|kubenode02]
 # Parar VM
-%cd%/env/unix/stop.bat [devstack|docker|kubernetes|osm]
+%cd%/env/windows/stop.bat [devstack|docker|kubernetes|osm]
 # Eliminar VM
-%cd%/env/unix/delete.bat [devstack|docker|kubernetes|osm]
+%cd%/env/windows/delete.bat [devstack|docker|kubernetes|osm]
 ```
+
+*Nota*: si no se indica un parámetro, el acceso al entorno de Kubernetes se realizará al nodo *master* (kubeadmin).
+
+# Documentación y scripts
+
+Dentro del directorio de cada herramienta se incluyen ciertos recursos.
+
+Parte de ellos se usan para la preparación del entorno:
+
+- Archivo de configuración: disponible bajo *tools/devstack/resources/cfg* y usado para iniciar el entorno con variables de configuración
+- Scripts de inicio: disponibles bajo *tools/\*\*/resources/script/setup* con la finalidad es ayudar a desplegar el entorno
+- Par de claves: disponibles bajo  *tools/(devstack|osm)/resources/key* y usadas para facilitar el acceso a las máquinas que se creen durante las pruebas
+
+Y otros están disponibles dentro de las máquinas (bajo la `$HOME` del usuario) para poder seguir los diferentes pasos:
+
+- Guía de uso: disponible bajo *tools/\*\*/resources/doc/README.md* como referencia de los pasos a seguir
+- Scripts de operación: disponibles bajo *tools/\*\*/resources/script/operation* y usados para replicar los pasos de la guía
 
 # Autores
 
