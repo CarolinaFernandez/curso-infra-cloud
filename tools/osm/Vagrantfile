@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/bionic64"
 
   # Determine disk size (GB):
-  # OSMr9: 40
+  # OSM: 40
   config.disksize.size = "40GB"
 
   # Plugins
@@ -94,11 +94,11 @@ Vagrant.configure("2") do |config|
       vb.gui = false
   #
   #   # Customize the amount of memory on the VM (MB):
-  #   # OSMr9: 6144-8192
+  #   # OSM: 6144-8192
     vb.memory = "6144"
   #
   #   # Customize the amount of CPUs:
-  #   # OSMr9: 2
+  #   # OSM: 2
     vb.cpus = "2"
   #
   #   # This is commented out until resolution has been found for proper
@@ -123,19 +123,9 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", after: :all, privileged: false, path: "resources/script/setup/set_permissions.sh"
 
   # Post-up message
-#  $post_up_msg = <<MSG
-#--------------------------------------------------------
-#OSM release NINE
-#
-#Dashboard:      http://localhost:8080
-#Monitoring:     http://localhost:3000
-#Username:       admin
-#Password:       admin
-#--------------------------------------------------------
-#MSG
   $post_up_msg = <<MSG
 --------------------------------------------------------
-OSM release NINE
+OSM release TEN
 
 Dashboard:      http://#{host_ip}:80
 Monitoring:     http://#{host_ip}:3000

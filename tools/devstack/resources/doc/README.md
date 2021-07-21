@@ -265,9 +265,9 @@ Tras la prueba, se borran dichas instancias.
 
 ```bash
 SRV_NAME="cirros-test1"
-./server-remove.sh $SRV_NAME
+./server-delete.sh $SRV_NAME
 SRV_NAME="cirros-test2"
-./server-remove.sh $SRV_NAME
+./server-delete.sh $SRV_NAME
 ```
 
 ## Orquestación de recursos 
