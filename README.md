@@ -5,7 +5,7 @@ Este repositorio provee de documentación y ejecutables para probar herramientas
 - DevStack (Victoria)
 - Docker (20.10.6)
 - Kubernetes (1.21)
-- OSM (NINE)
+- OSM (TEN)
 
 ## Requisitos
 

@@ -270,11 +270,43 @@ SRV_NAME="cirros-test2"
 ./server-delete.sh $SRV_NAME
 ```
 
+## Avanzado
+
+### Instalación de plugins
+
+OpenStack permite la instalación de diferentes servicios o componentes que extienden la funcionalidad inicial de una instancia determinada de OpenStack. En el caso de DevStack, la instalación de diferentes servicios se hace mediante la directiva "enable_plugin" en el archivo "local.conf" (situado en "tools/devstack/resources/cfg/devstack-local.conf" en este repositorio).
+
+Si se descomenta (con un nivel de "#") la sección de "Ceilometer" en dicho archivo tras borrar e iniviar la VM, aparte de la orquestación con *Heat* se instalará *Ceilometer* para la monitorización.
+
+*Nota: una vez hecho eso, DevStack necesitará más recursos (asegúrate de que tu entorno puede con ellos o incrementa la memoria RAM en el archivo Vagrantfile pertinente.*
+
+Se puede validar la instalación de los servicios comprobando la lista de servicios en activo.
+
+```bash
+$ openstack service list
++----------------------------------+-------------+----------------+
+| ID                               | Name        | Type           |
++----------------------------------+-------------+----------------+
+| 09202e7c0eb64724882d624ae58aeeef | cinderv3    | volumev3       |
+| 102d5f20300b4733989aa308dd92ab16 | cinder      | block-storage  |
+| 1b2b6e0901bc4755b9ee01c35ef969c4 | nova_legacy | compute_legacy |
+| 470351cfa2b34d0bbe35d9ac7b3676d2 | neutron     | network        |
+| 5e5fe066c72e4347a6d6c9ed78c79c77 | placement   | placement      |
+| 64dba5fd29844b62a731aa30048b38c0 | keystone    | identity       |
+| 67e47715f9534159a6c74878c89fe5d7 | heat-cfn    | cloudformation |
+| 93c7578f69d04b278cd6458421e62d54 | nova        | compute        |
+| c1f67723908b4190b648f452f049cc02 | glance      | image          |
+| c3e6f0839bb84ea09d7f2005a98338c0 | cinderv2    | volumev2       |
+| e3a78cf684404f839f1047dd267404fd | heat        | orchestration  |
+| ef4ce71093324682adf7df09476cc06a | gnocchi     | metric         |
++----------------------------------+-------------+----------------+
+```
+
 ## Orquestación de recursos 
 
-Aparte de crear los recursos manualmente, también es posible utilizar unos *templates* que indican todos los recursos a utilizar en un despliegue determinado. De este modo se crean *stacks* que agrupan los recursos relacionados y permiten tratarlos como una unidad, tanto a la hora de crear como a la hora de limpiar el entorno.
+Aparte de crear los recursos manualmente, también es posible utilizar unos *templates* que indican todos los recursos a utilizar en un despliegue determinado. De este modo se crean *stacks* que agrupan los recursos relacionados y permiten tratarlos como una unidad, tanto a la hora de crear como a la hora de limpiar el entorno. El componente que permite esto se llama *Heat* y se instala previamente como un servicio externo.
 
-Primero se borran las instancias creadas previamente (usando el comando "openstack server"). Luego se crea el *stack*, lo cual dará un informe de estado preliminar y procederá a la instanciación de cada recurso.
+Para probarlo, primero se borran las instancias creadas previamente (usando el comando "openstack server"). Luego se crea el *stack*, lo cual dará un informe de estado preliminar y procederá a la instanciación de cada recurso.
 
 ```bash
 ./stack-create.sh
@@ -300,3 +332,41 @@ STACK_NAME="cirros-stack"
 ./stack-delete.sh ${STACK_NAME}
 ```
 
+## Monitorización
+
+OpenStack dispone de un sistema de telemetría que almacena una serie de métricas determinadas. Este componente se llama *Ceilometer* y mediante el mismo se puede obtener, por ejemplo, el consumo de CPU, memoria o la cantidad de datos recibidos o enviados desde cada *server*, entre muchas otras.
+
+Inicialmente se puede observar la lista de métricas monitorizadas en este momento.
+
+```bash
+$ openstack metric list
++--------------------------------------+---------------------+--------------------------------------------+------+--------------------------------------+
+| id                                   | archive_policy/name | name                                       | unit | resource_id                          |
++--------------------------------------+---------------------+--------------------------------------------+------+--------------------------------------+
+| 238f3561-631e-4c1b-b1b7-e9274c905501 | ceilometer-low      | image.size                                 | B    | 41e5777e-18bc-4d0d-9048-660475b661a3 |
+| 25b25bb9-d5b6-48f8-87f0-692656c13a2b | ceilometer-low      | disk.ephemeral.size                        | GB   | 9ee70716-110b-458b-9906-27f6e9c5016e |
+| 2dae8abb-c657-48bc-ab74-ebb6da205c3d | ceilometer-low      | image.size                                 | B    | 742e1896-e959-4592-9e88-7ae6eabd4d1d |
+| 309a8c48-d1b2-4780-aee2-ed1415e4340f | ceilometer-low      | compute.instance.booting.time              | sec  | 9ee70716-110b-458b-9906-27f6e9c5016e |
+| 3a89e589-7bff-48af-9268-da9a02962435 | ceilometer-low      | image.size                                 | B    | 4457d2dc-42ea-48fd-a397-db81ede54425 |
+| 4a1f5455-fe05-43d2-811c-bafd324fc12e | ceilometer-low      | volume.provider.pool.capacity.allocated    | GB   | ea9f9fcc-8003-52b1-af4d-4b29fbd9ed05 |
+| 536b5d3e-9696-4fba-83b8-dee496000d5f | ceilometer-low      | volume.provider.pool.capacity.free         | GB   | ea9f9fcc-8003-52b1-af4d-4b29fbd9ed05 |
+| 90feecc2-2113-4ce1-9e4b-530afc20b17d | ceilometer-low      | volume.provider.pool.capacity.total        | GB   | ea9f9fcc-8003-52b1-af4d-4b29fbd9ed05 |
+| 949f8208-df16-4cfb-8040-3174fba53765 | ceilometer-low      | image.serve                                | B    | 41e5777e-18bc-4d0d-9048-660475b661a3 |
+| 94f528f3-303f-464f-9bfb-ec5a64808d82 | ceilometer-low      | vcpus                                      | vcpu | 9ee70716-110b-458b-9906-27f6e9c5016e |
+| 9b29a1c1-d6ca-4749-832a-c321eafa99cf | ceilometer-low      | memory.resident                            | MB   | 9ee70716-110b-458b-9906-27f6e9c5016e |
+| ad4db06f-daea-49b9-bff2-6063cb7a8878 | ceilometer-low      | volume.provider.pool.capacity.virtual_free | GB   | ea9f9fcc-8003-52b1-af4d-4b29fbd9ed05 |
+| b49dfb73-78ef-40aa-8d22-e776299d1264 | ceilometer-low      | volume.provider.pool.capacity.provisioned  | GB   | ea9f9fcc-8003-52b1-af4d-4b29fbd9ed05 |
+| d106be17-dc46-4497-ae82-bf3ef914e7b5 | ceilometer-low      | cpu                                        | ns   | 9ee70716-110b-458b-9906-27f6e9c5016e |
+| dccba4a8-e18a-4a5e-a44d-66497f193fe7 | ceilometer-low      | image.download                             | B    | 41e5777e-18bc-4d0d-9048-660475b661a3 |
+| e48a429b-b954-45f7-b745-f41b775a011c | ceilometer-low      | disk.root.size                             | GB   | 9ee70716-110b-458b-9906-27f6e9c5016e |
+| f6fcc261-2e0b-405a-874e-c7ee5c668aab | ceilometer-low      | memory                                     | MB   | 9ee70716-110b-458b-9906-27f6e9c5016e |
++--------------------------------------+---------------------+--------------------------------------------+------+--------------------------------------+
+```
+
+También se pueden obtener métricas concretas de cada recurso, de la forma:
+
+```bash
+$ openstack metric ${metric_name} ${resource_id}
+```
+
+En la documentación de OpenStack (https://docs.openstack.org/ceilometer/wallaby/admin/telemetry-measurements.html) se puede acceder a la lista completa de métricas según la versión.
