@@ -2,7 +2,7 @@
 
 Este repositorio provee de documentación y ejecutables para probar herramientas de virtualización, cloud privado y NFV, en concreto de las siguientes:
 
-- DevStack (Victoria)
+- DevStack (Wallaby)
 - Docker (20.10.6)
 - Kubernetes (1.21)
 - OSM (TEN)
