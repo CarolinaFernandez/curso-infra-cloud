@@ -2,9 +2,9 @@
 
 Este repositorio provee de documentación y ejecutables para probar herramientas de virtualización, cloud privado y NFV, en concreto de las siguientes:
 
-- DevStack (Wallaby)
-- Docker (20.10.6)
-- Kubernetes (1.21)
+- DevStack (Xena)
+- Docker (20.10.12)
+- Kubernetes (1.23)
 - OSM (TEN)
 
 ## Requisitos
@@ -22,7 +22,10 @@ Este repositorio provee de documentación y ejecutables para probar herramientas
 
 ### Herramientas
 
-- [Vagrant](https://www.vagrantup.com/docs/installation) 2.2.13 o superior
+- [Vagrant](https://www.vagrantup.com/docs/installation) 2.2.7 o superior
+- VirtualBox 6.1.26 o inferior
+
+**Nota**: en VirtualBox 6.1.28 y superiores se obtiene error al asignar la IP en la red privada. De encontrar este error, hay que seguir [estos pasos](https://superuser.com/questions/1691783/cannot-create-a-private-network-from-vagrant-in-virtualbox-after-updating-it), creando el archivo */etc/vbox/networks.conf* e introduciendo el valor `* 0.0.0.0/0 ::/0`.
 
 # Uso
 

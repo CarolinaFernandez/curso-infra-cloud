@@ -103,7 +103,7 @@ Vagrant.configure("2") do |config|
   # Post-up message
   $post_up_msg = <<MSG
 --------------------------------------------------------
-Docker 20.10.16
+Docker 20.10.12
 --------------------------------------------------------
 MSG
   config.vm.post_up_message = $post_up_msg

@@ -369,4 +369,4 @@ También se pueden obtener métricas concretas de cada recurso, de la forma:
 $ openstack metric ${metric_name} ${resource_id}
 ```
 
-En la documentación de OpenStack (https://docs.openstack.org/ceilometer/wallaby/admin/telemetry-measurements.html) se puede acceder a la lista completa de métricas según la versión.
+En la documentación de OpenStack (https://docs.openstack.org/ceilometer/xena/admin/telemetry-measurements.html) se puede acceder a la lista completa de métricas según la versión.
