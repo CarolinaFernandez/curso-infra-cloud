@@ -14,7 +14,7 @@ sed -e '/^.*ubuntu-focal.*/d' -i /etc/hosts
 
 # Update /etc/hosts about other hosts
 cat >> /etc/hosts <<EOF
-192.168.33.110  cloudinfra-k8s-master
-192.168.33.120  cloudinfra-k8s-node01
-192.168.33.130  cloudinfra-k8s-node02
+192.178.33.110  cloudinfra-k8s-master
+192.178.33.120  cloudinfra-k8s-node01
+192.178.33.130  cloudinfra-k8s-node02
 EOF

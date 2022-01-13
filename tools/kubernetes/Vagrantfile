@@ -51,7 +51,7 @@ Vagrant.configure("2") do |config|
   #post_up_message = ""
 
   # Provision 1 master node
-  master_ip = "192.168.33.110"
+  master_ip = "192.178.33.110"
   ## Primary: default VM used in the multi-VM environment
   config.vm.define "kubemaster", primary: true do |node|
     # Name shown in the GUI
@@ -111,7 +111,7 @@ MSG
   end
 
   # Provision 2 worker nodes
-  worker_ip_base = "192.168.33.1"
+  worker_ip_base = "192.178.33.1"
   (1..2).each do |i|
     config.vm.define "kubenode0#{i}" do |node|
         node.vm.provider "virtualbox" do |vb|
@@ -122,7 +122,7 @@ MSG
         node.vm.hostname = "cloudinfra-k8s-node0#{i}"
         # Create a private network, which allows host-only access to the machine
         # using a specific IP.
-        # 192.168.33.120, 192.168.33.130
+        # 192.178.33.120, 192.178.33.130
         node.vm.network "private_network", ip: "#{worker_ip_base}#{i+1}0", netmask: "255.255.255.0"
         # 8011, 8021
         node.vm.network "forwarded_port", guest: "8001", host: "80#{i}1"

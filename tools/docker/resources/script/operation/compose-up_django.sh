@@ -89,4 +89,4 @@ echo "Generate a Django superuser (define at least username and password)"
 # Create superuser (user's input required)
 docker exec -it django_compose_web_1 python manage.py createsuperuser
 
-echo "Open http://192.168.33.113:8010/admin in a browser and access with the given credentials"
+echo "Open http://192.178.33.113:8010/admin in a browser and access with the given credentials"

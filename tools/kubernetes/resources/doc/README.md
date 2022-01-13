@@ -14,8 +14,8 @@ En este directorio se encuentra una serie de ejecutables con diferentes opciones
 
 Antes de nada, este despliegue consta de un *cluster* con tres nodos:
 
-- Plano de control: kubemaster (192.168.33.110)
-- Plano de trabajo: kubenode01 (192.168.33.120), kubenode02 (192.168.33.130)
+- Plano de control: kubemaster (192.178.33.110)
+- Plano de trabajo: kubenode01 (192.178.33.120), kubenode02 (192.178.33.130)
 
 Cuando se accede a la VM por SSH se está en "kubemaster", pero es posible acceder a cualquier otro nodo mediante el script "connect" del entorno, como se indica en la raíz.
 

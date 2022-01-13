@@ -58,5 +58,5 @@ spec:
 EOF
 
 # FIXME
-echo "Service accessible at http://192.168.33.120:30000, http://192.168.33.130:30000"
+echo "Service accessible at http://192.178.33.120:30000, http://192.178.33.130:30000"
 # http://127.0.0.1:30010/api/v1/namespaces/default/pods

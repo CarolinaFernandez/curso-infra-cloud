@@ -58,7 +58,7 @@ Vagrant.configure("2") do |config|
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
   # Vagrant access network
-  host_ip = "192.168.33.111"
+  host_ip = "192.178.33.111"
   config.vm.network "private_network", ip: "#{host_ip}", netmask: "255.255.255.0"
   ## Data network
   host_data_ip = "10.10.10.111"
@@ -105,7 +105,7 @@ Vagrant.configure("2") do |config|
   #   # usage. For now it will use the default graphics controller.
     vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
     #vb.customize ["modifyvm", :id, "--graphicscontroller", "vboxvga"]
-    ###vb.customize ["modifyvm", :id, "--natnet1", "192.168.33/24"]
+    ###vb.customize ["modifyvm", :id, "--natnet1", "192.178.33/24"]
   end
   #
   # View the documentation for the provider you are using for more

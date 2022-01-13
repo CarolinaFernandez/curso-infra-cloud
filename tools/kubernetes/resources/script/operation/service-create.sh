@@ -36,7 +36,7 @@ spec:
   ports:
     - port: 8082        # Cluster IP - example: http://10.109.199.234:8082
       targetPort: 8080  # Application port
-      nodePort: 30000   # External IP (VirtualBox) - example: http://192.168.33.120:30000, http://192.168.33.130:30000
+      nodePort: 30000   # External IP (VirtualBox) - example: http://192.178.33.120:30000, http://192.178.33.130:30000
       protocol: TCP
       name: http
   selector:

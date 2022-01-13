@@ -19,7 +19,9 @@ cd /opt
 
 # https://docs.openstack.org/devstack/latest/
 # Download code and select the expected branch
-sudo git clone --branch stable/victoria https://opendev.org/openstack/devstack
+##sudo export GIT_SSL_NO_VERIFY=1
+sudo git config --global http.sslverify false
+sudo git clone --branch stable/wallaby https://opendev.org/openstack/devstack
 
 # Place configuration
 ## (from stack's home to /opt/devstack)
@@ -30,6 +32,7 @@ sudo chown stack:stack stack -R
 
 # Install
 ## https://stackoverflow.com/questions/32369328/changing-user-during-vagrant-provisioning
+sudo -u stack git config --global http.sslverify false
 sudo runuser -l stack -c "cd /opt/devstack && ./stack.sh"
 
 # Persist loading of the OpenRC file

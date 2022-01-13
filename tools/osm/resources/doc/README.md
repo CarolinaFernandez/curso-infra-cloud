@@ -21,7 +21,7 @@ Los datos necesarios para la conexión se proporcionan por otro canal y se han d
 
 ```bash
 VIM_NAME="openstack-vim-local"
-VIM_URL="http://192.168.33.112/identity/v3/"
+VIM_URL="http://192.178.33.112/identity/v3/"
 TENANT="admin"
 USER="admin"
 PASSWORD="secret"

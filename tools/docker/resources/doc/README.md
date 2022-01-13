@@ -20,7 +20,7 @@ Si se quiere operar con la interfaz gráfica se puede ejecutar el script con Por
 
 En el script se indicará el enlace desde el cual la GUI se encuentra disponible desde el sistema base:
 
-http://192.168.33.113:9000
+http://192.178.33.113:9000
 
 El usuario y password se generan durante el primer acceso.
 
@@ -105,7 +105,7 @@ Ahora se puede probar el despliegue de un contenedor cuyo puerto se expone tambi
 ./container-run_nginx_port_remote.sh
 ```
 
-Ahora se puede comprobar el servicio desde la IP pública, en http://192.168.33.113:8080.
+Ahora se puede comprobar el servicio desde la IP pública, en http://192.178.33.113:8080.
 
 De nuevo se procede al borrado.
 
@@ -202,7 +202,7 @@ En el segundo ejemplo de docker-compose se instancia una aplicación que corre m
 ```
 
 Mientras se despliega se solicita establecer un superusuario.
-Una vez definido, se puede acceder con él a la aplicación desde la IP pública de la máquina: http://192.168.33.113:8000/admin
+Una vez definido, se puede acceder con él a la aplicación desde la IP pública de la máquina: http://192.178.33.113:8000/admin
 
 De nuevo, se puede eliminar el *stack* una vez probado.
 
