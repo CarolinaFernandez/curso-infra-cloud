@@ -6,11 +6,18 @@
 # -*- mode: ruby -*-
 # vi:set ft=ruby sw=2 ts=2 sts=2:
 
+version = "1.23"
+vb_group_name = "cloudinfra-k8s"
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
+
+  config.vm.provider "virtualbox" do |v|
+    v.customize ["modifyvm", :id, "--groups", "/#{vb_group_name}"]
+  end
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
@@ -53,14 +60,14 @@ Vagrant.configure("2") do |config|
   # Provision 1 master node
   master_ip = "192.178.33.110"
   ## Primary: default VM used in the multi-VM environment
-  config.vm.define "kubemaster", primary: true do |node|
+  config.vm.define "k8s-cp", primary: true do |node|
     # Name shown in the GUI
     node.vm.provider "virtualbox" do |vb|
-        vb.name = "cloudinfra-k8s-master"
+        vb.name = "cp"
         vb.memory = 2048
         vb.cpus = 2
     end
-    node.vm.hostname = "cloudinfra-k8s-master"
+    node.vm.hostname = "cp"
 
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
@@ -86,19 +93,25 @@ Vagrant.configure("2") do |config|
     node.vm.provision "setup-hosts", type: "shell", path: "resources/script/setup/setup_k8s_hosts.sh" do |s|
       s.args = ["enp0s8"]
     end
-    node.vm.provision "setup-dns", type: "shell", path: "resources/script/setup/update_dns.sh"
-    node.vm.provision "install-docker", type: "shell", path: "resources/script/setup/install_docker.sh"
-    node.vm.provision "install-kube-bins", type: "shell", path: "resources/script/setup/install_kube_tools.sh"
-    node.vm.provision "setup-kube-master", type: "shell", path: "resources/script/setup/setup_kube_master.sh" do |s|
+    node.vm.provision "setup-dns", type: "shell", after: "setup-hosts", path: "resources/script/setup/update_dns.sh"
+    node.vm.provision "install-cri", type: "shell", after: "setup-dns", path: "resources/script/setup/install_cri.sh" do |s|
+      s.args = ["#{version}"]
+    end
+    node.vm.provision "install-kube-bins", type: "shell", after: "install-cri", path: "resources/script/setup/install_kube_tools.sh" do |s|
+      s.args = ["#{version}"]
+    end
+    node.vm.provision "setup-kube-master", type: "shell", after: "install-kube-bins", path: "resources/script/setup/setup_kube_master.sh" do |s|
       s.args = ["#{master_ip}"]
     end
+    node.vm.provision "setup-taints", type: "shell", after: "setup-kube-master", path: "resources/script/setup/setup_taints.sh"
+    node.vm.provision "install-cni", type: "shell", after: "setup-taints", path: "resources/script/setup/install_cni.sh"
     node.vm.provision "place-ssh-keys", type: "shell", after: "file-keys", path: "resources/script/setup/copy_keys.sh"
     node.vm.provision "setup-kube-node", type: "shell", after: :all, path: "resources/script/setup/setup_kube_node.sh"
 
     # Post-up message
     $post_up_msg = <<MSG
 --------------------------------------------------------
-Kubernetes 1.23 (master node)
+Kubernetes #{version} (master node)
 
 etcd server client API:		127.0.0.1:2379, 127.0.0.1:2380
 Kubernetes API server: 		https://127.0.0.1:6443
@@ -113,13 +126,13 @@ MSG
   # Provision 2 worker nodes
   worker_ip_base = "192.178.33.1"
   (1..2).each do |i|
-    config.vm.define "kubenode0#{i}" do |node|
+    config.vm.define "k8s-worker#{i}" do |node|
         node.vm.provider "virtualbox" do |vb|
-            vb.name = "cloudinfra-k8s-node0#{i}"
+            vb.name = "worker#{i}"
             vb.memory = 2048
             vb.cpus = 2
         end
-        node.vm.hostname = "cloudinfra-k8s-node0#{i}"
+        node.vm.hostname = "worker#{i}"
         # Create a private network, which allows host-only access to the machine
         # using a specific IP.
         # 192.178.33.120, 192.178.33.130
@@ -141,10 +154,14 @@ MSG
         node.vm.provision "setup-hosts", :type => "shell", path: "resources/script/setup/setup_k8s_hosts.sh" do |s|
           s.args = ["enp0s8"]
         end
-        node.vm.provision "setup-dns", type: "shell", path: "resources/script/setup/update_dns.sh"
-        node.vm.provision "install-docker", type: "shell", path: "resources/script/setup/install_docker.sh"
-        node.vm.provision "install-kube-bins", type: "shell", path: "resources/script/setup/install_kube_tools.sh"
-        node.vm.provision "setup-kube-worker", type: "shell", path: "resources/script/setup/setup_kube_worker.sh" do |s|
+        node.vm.provision "setup-dns", type: "shell", after: "setup-hosts", path: "resources/script/setup/update_dns.sh"
+        node.vm.provision "install-cri", type: "shell", after: "setup-dns", path: "resources/script/setup/install_cri.sh" do |s|
+          s.args = ["#{version}"]
+        end
+        node.vm.provision "install-kube-bins", type: "shell", after: "install-cri", path: "resources/script/setup/install_kube_tools.sh" do |s|
+          s.args = ["#{version}"]
+        end
+        node.vm.provision "setup-kube-worker", type: "shell", after: "install-kube-bins", path: "resources/script/setup/setup_kube_worker.sh" do |s|
           s.args = ["#{master_ip}"]
         end
         node.vm.provision "place-ssh-keys", type: "shell", after: "file-keys", path: "resources/script/setup/copy_keys.sh"
@@ -153,7 +170,7 @@ MSG
         # Post-up message
         $post_up_msg = <<MSG
 --------------------------------------------------------
-Kubernetes 1.23 (worker node #{i})
+Kubernetes #{version} (worker node #{i})
 
 Kubelet API:                    https://127.0.0.1:10#{2+i}50
 NodePort Services:              127.0.0.1:3000#{i}0, 127.0.0.1:3000#{i}1, 127.0.0.1:3000#{i}2,

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 HOST_IP=$1
 [[ -z $HOST_IP ]] && echo "Error: no host IP was defined" && exit 1
@@ -31,13 +31,3 @@ sudo -u ${USER} sudo cp -f /etc/kubernetes/admin.conf /home/${USER}/.kube/config
 sudo -u ${USER} sudo chown ${USER}:${USER} /home/${USER}/.kube -R
 
 sleep 5
-
-# Setup the CNI
-## Flannel
-sudo -u ${USER} kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-## WeaveNet
-#sudo -u ${USER} kubectl apply -f https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')
-
-# Allow pod scheduling in the control plane
-# See: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/
-sudo -u ${USER} kubectl taint nodes --all node-role.kubernetes.io/master-

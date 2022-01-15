@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+VERSION=$1
+[[ -z $VERSION ]] && echo "Error: no version was defined" && exit 1
 
 ##
 # Install Kubernetes-related tools
@@ -14,7 +17,8 @@ echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https:/
 
 # Setup tools
 sudo apt-get update
-sudo apt-get install -y kubelet kubeadm kubectl
+VERSION_FULL=$(apt-cache madison kubeadm | sort -tr | grep ${VERSION} | tail -1 | cut -d "|" -f 2 | tr -d " ")
+sudo apt-get install -y --allow-change-held-packages kubelet=${VERSION_FULL} kubeadm=${VERSION_FULL} kubectl=${VERSION_FULL}
 
 # Allow autocomplete for kubectl
 # See: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
