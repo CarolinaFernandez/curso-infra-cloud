@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##
 # Authorise previously copied SSH keys to allow remote access from other nodes in the cluster

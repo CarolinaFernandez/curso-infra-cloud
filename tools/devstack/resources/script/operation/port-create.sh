@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 PORT_NAME=$1
 NETWORK_ID=$2

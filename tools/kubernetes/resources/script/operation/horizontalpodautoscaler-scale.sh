@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Create a horizonalpodautoscaler to act on a given replicaset
 

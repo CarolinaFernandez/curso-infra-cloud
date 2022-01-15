@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Note: partly based on https://howchoo.com/devops/how-to-add-a-health-check-to-your-docker-container
 

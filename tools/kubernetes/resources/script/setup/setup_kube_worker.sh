@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 HOST_IP=$1
 [[ -z $HOST_IP ]] && echo "Error: no host IP was defined" && exit 1

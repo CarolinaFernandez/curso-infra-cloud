@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Taken from https://github.com/docker/awesome-compose/tree/master/elasticsearch-logstash-kibana
 

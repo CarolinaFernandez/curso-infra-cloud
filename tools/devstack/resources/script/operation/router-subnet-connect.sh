@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ROUTER_NAME=$1
 SUBNET_NAME=$2

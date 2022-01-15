@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Call like this: ./network-create.sh network-name 10.0.10.0 24
 

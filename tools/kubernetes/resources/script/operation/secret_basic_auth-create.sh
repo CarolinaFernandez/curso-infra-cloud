@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Create a basic-auth secret
 cat <<EOF | kubectl apply -f -

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 K8C_ID=$1
 

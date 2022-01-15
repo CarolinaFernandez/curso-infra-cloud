@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Create a serviceaccount and clusterrolebinding, both in a specific namespace
 

@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Updating requirements
 sudo apt-get update
 sudo apt-get install -y python3-pip python3-distutils
 
 # Add user
-sudo useradd -s /bin/bash -d /opt/stack -m stack
+sudo useradd -s /usr/bin/env bash -d /opt/stack -m stack
 echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
 
 # Place configuration

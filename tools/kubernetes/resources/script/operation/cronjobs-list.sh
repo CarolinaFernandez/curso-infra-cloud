@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo "List of cronjobs"
 kubectl get cronjobs

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 VIM_NAME=$1
 VIM_URL=$2

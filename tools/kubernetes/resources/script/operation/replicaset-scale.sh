@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Scale a given replicaset from the current number of replicas to the desired one
 

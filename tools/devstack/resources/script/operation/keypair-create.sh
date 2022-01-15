@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Create keypair
 ssh-keygen -t rsa -f ~/.ssh/id_openstack -q -N ""

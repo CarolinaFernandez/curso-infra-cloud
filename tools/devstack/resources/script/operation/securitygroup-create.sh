@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 openstack security group create cloudinfra-sec
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Create a configmap with some initial key
 # note: this should *not* be done (mixing imperative/create with apply)

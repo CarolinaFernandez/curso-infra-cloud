@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Creates a VM with a given image, flavor, security network, keypair and connected to a specific network
 

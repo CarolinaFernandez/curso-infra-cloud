@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 PKG_NAME=$1
 VIM_ID=$2

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Create entry page for the image
 cat <<EOF>>nginx_index.html

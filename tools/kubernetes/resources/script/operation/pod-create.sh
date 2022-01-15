@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Create a pod using the nginx image over a Debian OS
 # and including a custom entry page

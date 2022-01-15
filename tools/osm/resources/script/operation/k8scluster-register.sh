@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 osm vim-create --name dummy_vim --user u --password p --tenant p --account_type dummy --auth_url http://localhost/dummy
 

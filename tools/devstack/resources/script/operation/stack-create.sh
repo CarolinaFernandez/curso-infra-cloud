@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Creates an OpenStack stack (Heat) from a template
 # See https://docs.openstack.org/heat/queens/getting_started/create_a_stack.html

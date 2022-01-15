@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 kubectl delete resourcequota/pods-low 
 kubectl delete priorityclass.scheduling.k8s.io/low-prio 

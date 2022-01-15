@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cat <<EOF | kubectl apply -f -
 apiVersion: batch/v1
