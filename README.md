@@ -1,5 +1,7 @@
 # Curso de infraestructura cloud
 
+**Note**: check English version [here](README.en.md).
+
 Este repositorio provee de documentación y ejecutables para probar herramientas de virtualización, cloud privado y NFV, en concreto de las siguientes:
 
 - DevStack (Xena)
@@ -23,9 +25,9 @@ Este repositorio provee de documentación y ejecutables para probar herramientas
 ### Herramientas
 
 - [Vagrant](https://www.vagrantup.com/docs/installation) 2.2.7 o superior
-- VirtualBox 6.1.26 o inferior
+- [VirtualBox](https://www.oracle.com/virtualization/technologies/vm/downloads/virtualbox-downloads.html) 6.1.26 o inferior
 
-**Nota**: en VirtualBox 6.1.28 y superiores se obtiene error al asignar la IP en la red privada. De encontrar este error, hay que seguir [estos pasos](https://superuser.com/questions/1691783/cannot-create-a-private-network-from-vagrant-in-virtualbox-after-updating-it), creando el archivo */etc/vbox/networks.conf* e introduciendo el valor `* 0.0.0.0/0 ::/0`.
+**Nota**: en VirtualBox 6.1.28 y superiores se obtiene error al asignar la IP en la red privada. De encontrar este error, hay que seguir [estos pasos](https://superuser.com/questions/1691783/cannot-create-a-private-network-from-vagrant-in-virtualbox-after-updating-it), creando el archivo */etc/vbox/networks.conf* e introduciendo la línea `* 0.0.0.0/0 ::/0`.
 
 # Uso
 
@@ -36,7 +38,7 @@ Este repositorio provee de documentación y ejecutables para probar herramientas
 ./env/unix/start.sh [devstack|docker|kubernetes|osm]
 # Conectar a VM
 ./env/unix/connect.sh (devstack|docker|osm)
-./env/unix/connect.sh kubernetes [kubeadmin|kubenode01|kubenode02]
+./env/unix/connect.sh kubernetes [cp|worker1|worker2]
 # Parar VM
 ./env/unix/stop.sh [devstack|docker|kubernetes|osm]
 # Eliminar VM
@@ -50,14 +52,14 @@ Este repositorio provee de documentación y ejecutables para probar herramientas
 %cd%/env/windows/start.bat (devstack|docker|kubernetes|osm)
 # Conectar a VM
 %cd%/env/windows/connect.bat (devstack|docker|osm)
-%cd%/env/windows/connect.bat kubernetes [kubeadmin|kubenode01|kubenode02]
+%cd%/env/windows/connect.bat kubernetes [cp|worker1|worker2]
 # Parar VM
 %cd%/env/windows/stop.bat [devstack|docker|kubernetes|osm]
 # Eliminar VM
 %cd%/env/windows/delete.bat [devstack|docker|kubernetes|osm]
 ```
 
-*Nota*: si no se indica un parámetro, el acceso al entorno de Kubernetes se realizará al nodo *master* (kubeadmin).
+*Nota*: si no se indica un parámetro, el acceso al entorno de Kubernetes se realizará al nodo *cp* (k8scp).
 
 # Documentación y scripts
 
