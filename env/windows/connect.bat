@@ -1,7 +1,7 @@
 @echo off
 
 ::::
-:: Enter to the Vagrant environment
+:: Enter the Vagrant environment
 ::
 
 :: Access specific environment

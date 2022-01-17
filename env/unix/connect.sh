@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##
-# Enter to the Vagrant environment
+# Enter the Vagrant environment
 #
 
 # Access specific environment
