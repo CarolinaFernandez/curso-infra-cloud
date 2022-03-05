@@ -2,6 +2,8 @@
 
 HOST_IP=$1
 [[ -z $HOST_IP ]] && echo "Error: no host IP was defined" && exit 1
+POD_CIDR=$2
+[[ -z $POD_CIDR ]] && echo "Error: no pod CIDR was defined" && exit 1
 
 ##
 # Setup kubeadmin nodes
@@ -13,7 +15,7 @@ KUBEADMJOIN_FILE=kubeadmjoin
 # Initialise the cluster
 # See: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/configure-cgroup-driver/
 
-sudo -u ${USER} sudo kubeadm init --pod-network-cidr 10.244.0.0/16 --apiserver-advertise-address=${HOST_IP} > /home/${USER}/${KUBEADMJOIN_FILE}.bak 2>&1
+sudo -u ${USER} sudo kubeadm init --pod-network-cidr ${POD_CIDR} --apiserver-advertise-address=${HOST_IP} > /home/${USER}/${KUBEADMJOIN_FILE}.bak 2>&1
 
 # Setup the admission controllers (does not seem required for this version)
 # See: https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#how-do-i-turn-on-an-admission-controller

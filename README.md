@@ -6,7 +6,7 @@ Este repositorio provee de documentación y ejecutables para probar herramientas
 
 - DevStack (Xena)
 - Docker (20.10.12)
-- Kubernetes (1.23)
+- Kubernetes (1.23.{latest})
 - OSM (TEN)
 
 ## Requisitos
@@ -38,7 +38,7 @@ Este repositorio provee de documentación y ejecutables para probar herramientas
 ./env/unix/start.sh [devstack|docker|kubernetes|osm]
 # Conectar a VM
 ./env/unix/connect.sh (devstack|docker|osm)
-./env/unix/connect.sh kubernetes [cp|worker1|worker2]
+./env/unix/connect.sh kubernetes [k8s-cp|k8s-worker1|k8s-worker2]
 # Parar VM
 ./env/unix/stop.sh [devstack|docker|kubernetes|osm]
 # Eliminar VM
@@ -52,7 +52,7 @@ Este repositorio provee de documentación y ejecutables para probar herramientas
 %cd%/env/windows/start.bat (devstack|docker|kubernetes|osm)
 # Conectar a VM
 %cd%/env/windows/connect.bat (devstack|docker|osm)
-%cd%/env/windows/connect.bat kubernetes [cp|worker1|worker2]
+%cd%/env/windows/connect.bat kubernetes [k8s-cp|k8s-worker1|k8s-worker2]
 # Parar VM
 %cd%/env/windows/stop.bat [devstack|docker|kubernetes|osm]
 # Eliminar VM

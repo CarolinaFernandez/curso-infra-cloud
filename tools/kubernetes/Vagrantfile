@@ -6,6 +6,7 @@
 # -*- mode: ruby -*-
 # vi:set ft=ruby sw=2 ts=2 sts=2:
 
+pod_cidr = "172.178.33.0/16"
 version = "1.23"
 vb_group_name = "cloudinfra-k8s"
 
@@ -101,10 +102,12 @@ Vagrant.configure("2") do |config|
       s.args = ["#{version}"]
     end
     node.vm.provision "setup-kube-master", type: "shell", after: "install-kube-bins", path: "resources/script/setup/setup_kube_master.sh" do |s|
-      s.args = ["#{master_ip}"]
+      s.args = ["#{master_ip}", "#{pod_cidr}"]
     end
     node.vm.provision "setup-taints", type: "shell", after: "setup-kube-master", path: "resources/script/setup/setup_taints.sh"
-    node.vm.provision "install-cni", type: "shell", after: "setup-taints", path: "resources/script/setup/install_cni.sh"
+    node.vm.provision "install-cni", type: "shell", after: "setup-taints", path: "resources/script/setup/install_cni.sh" do |s|
+      s.args = ["#{master_ip}", "#{pod_cidr}"]
+    end
     node.vm.provision "place-ssh-keys", type: "shell", after: "file-keys", path: "resources/script/setup/copy_keys.sh"
     node.vm.provision "setup-kube-node", type: "shell", after: :all, path: "resources/script/setup/setup_kube_node.sh"
 
