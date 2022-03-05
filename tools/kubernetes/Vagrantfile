@@ -90,6 +90,9 @@ Vagrant.configure("2") do |config|
     node.vm.provision "file-doc", type: "file", source: "resources/doc/README.md", destination: "~/"
     node.vm.provision "file-scripts", type: "file", source: "resources/script/operation", destination: "~/scripts"
     node.vm.provision "file-keys", type: "file", source: "resources/key", destination: "~/.ssh"
+    # Make sure file has proper permissions upon copy
+    #node.vm.provision "chmod-ssh-keys", type: "shell", after: "file-keys", inline: "chmod 600 ~/.ssh/cloudinfra"
+    node.vm.provision "place-ssh-keys", type: "shell", after: "file-keys", path: "resources/script/setup/copy_keys.sh"
 
     node.vm.provision "setup-hosts", type: "shell", path: "resources/script/setup/setup_k8s_hosts.sh" do |s|
       s.args = ["enp0s8"]
@@ -108,7 +111,6 @@ Vagrant.configure("2") do |config|
     node.vm.provision "install-cni", type: "shell", after: "setup-taints", path: "resources/script/setup/install_cni.sh" do |s|
       s.args = ["#{master_ip}", "#{pod_cidr}"]
     end
-    node.vm.provision "place-ssh-keys", type: "shell", after: "file-keys", path: "resources/script/setup/copy_keys.sh"
     node.vm.provision "setup-kube-node", type: "shell", after: :all, path: "resources/script/setup/setup_kube_node.sh"
 
     # Post-up message
@@ -153,6 +155,9 @@ MSG
         node.vm.provision "file-doc", type: "file", source: "resources/doc/README.md", destination: "~/"
         node.vm.provision "file-scripts", type: "file", source: "resources/script/operation", destination: "~/scripts"
         node.vm.provision "file-keys", type: "file", source: "resources/key", destination: "~/.ssh"
+        # Make sure file has proper permissions upon copy
+        #node.vm.provision "chmod-ssh-keys", type: "shell", after: "file-keys", inline: "chmod 600 ~/.ssh/cloudinfra"
+        node.vm.provision "place-ssh-keys", type: "shell", after: "file-keys", path: "resources/script/setup/copy_keys.sh"
 
         node.vm.provision "setup-hosts", :type => "shell", path: "resources/script/setup/setup_k8s_hosts.sh" do |s|
           s.args = ["enp0s8"]
@@ -167,7 +172,6 @@ MSG
         node.vm.provision "setup-kube-worker", type: "shell", after: "install-kube-bins", path: "resources/script/setup/setup_kube_worker.sh" do |s|
           s.args = ["#{master_ip}"]
         end
-        node.vm.provision "place-ssh-keys", type: "shell", after: "file-keys", path: "resources/script/setup/copy_keys.sh"
         node.vm.provision "setup-kube-node", type: "shell", after: :all, path: "resources/script/setup/setup_kube_node.sh"
 
         # Post-up message
